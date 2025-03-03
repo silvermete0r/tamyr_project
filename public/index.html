@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamyr Project</title>
+  <link rel="icon" type="image/x-icon" href="https://www.pngall.com/wp-content/uploads/5/Green-Leaf-PNG-Free-Image.png">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .fa {
+      font-size: 24px;
+    }
+    .fa-instagram {
+      color: #ff3477;
+    }
+    .fa-telegram {
+      color: #0caaf9;
+    }
+    .fa-link {
+      color: rgb(40, 201, 40);
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Flashcard styles */
+    .flashcard {
+      perspective: 1000px;
+      width: 250px;
+      height: 180px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    
+    .flashcards-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 20px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+    
+    .card-icon {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      border-radius: 10px;
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .flashcard-front {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .flashcard-back {
+      background-color: #45a049;
+      color: white;
+      transform: rotateY(180deg);
+    }
+  </style>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="bg-gray-200">
+  <!-- Header -->
+  <header class="bg-green-500 py-4">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-white text-2xl font-bold">Tamyr</h1>
+      <nav>
+        <ul class="flex space-x-4">
+          <li><a href="#" class="text-white hover:text-gray-200">Home</a></li>
+          <li><a href="https://taplink.cc/tamyrproject" target="_blank" class="text-white hover:text-gray-200">Feedback</a></li>
+          <li><a href="https://taplink.cc/tamyrproject" target="_blank" class="text-white hover:text-gray-200">Donation</a></li>
+          <li><a href="https://taplink.cc/tamyrproject" target="_blank" class="text-white hover:text-gray-200">Our Team</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-4">💚 Tamyr - Join the largest ecological initiative in Kazakhstan! <a href="#add-node-form" style="color: green;">>>Contribute<<</a></h2>
+    
+    <p class="mb-4"><a href="https://www.instagram.com/tamyr_project" target="_blank" class="font-bold text-green-700">Tamyr</a> is a social network that connects people who have done something good for the environment. Each node represents a user who has done an ecological initiative. The edges represent the source of the initiative. The graph is directed, so the edges have a direction from the source to the target. See our <a href="#search-form" class="font-bold text-green-700">Ecological Tree!</a></p>
+
+    <img src="https://www.iucn.org/sites/default/files/2023-05/sdgs-en.png" alt="Tamyr Project" class="mx-auto mb-4">
+    <i><p class="mb-4 text-center">Credits: <a href="https://sdgs.un.org/goals" target="_blank" style="color: green;">UN: The 17 Goals</a></p></i>
+
+    <!-- Search Form -->
+    <form id="search-form" class="max-w-sm mx-auto mb-4">
+      <div class="flex items-center border-b border-b-2 border-green-500 py-2">
+        <input class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Search by node name..." aria-label="Search">
+        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" id="search-btn">
+          Search
+        </button> &nbsp;
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="location.reload();" type="button" id="refresh-btn">
+          Refresh
+        </button>
+      </div>
+    </form>
+
+    <!-- Graph Container -->
+    <div id="graph-container" class="bg-white rounded-lg shadow-lg" style="height: 1200px; overflow-y: auto; overflow-x: auto; overflow-wrap: auto;"></div>
+    
+    <br>
+
+    <!-- Add Node Form -->
+    <form id="add-node-form" class="max-w-sm mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="node-id">Your Instagram nickname:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="node-id" type="text" placeholder="nickname" required>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="node-label">What ecological initiative have you done?</label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="node-label" required>
+          <option value="planted_tree" selected>Planted a tree</option>
+          <option value="reduced_carbon_footprint">Reduced carbon footprint</option>
+          <option value="adopted_sustainable_practices">Adopted sustainable practices</option>
+          <option value="recycled_waste">Recycled waste</option>
+          <option value="used_public_transport">Used public transport</option>
+          <option value="switched_to_renewable_energy">Switched to renewable energy</option>
+          <option value="participated_in_community_cleanup">Participated in community cleanup</option>
+          <option value="installed_energy_efficient_appliances">Installed energy-efficient appliances</option>
+          <option value="supported_local_farmers_market">Supported local farmers market</option>
+          <option value="advocated_for_environmental_policy_change">Advocated for environmental policy change</option>
+          <option value="no_poverty">No Poverty</option>
+          <option value="zero_hunger">Zero Hunger</option>
+          <option value="good_health_and_well_being">Good Health and Well-being</option>
+          <option value="quality_education">Quality Education</option>
+          <option value="gender_equality">Gender Equality</option>
+          <option value="clean_water_and_sanitation">Clean Water and Sanitation</option>
+          <option value="affordable_and_clean_energy">Affordable and Clean Energy</option>
+          <option value="decent_work_and_economic_growth">Decent Work and Economic Growth</option>
+          <option value="industry_innovation_and_infrastructure">Industry, Innovation, and Infrastructure</option>
+          <option value="reduced_inequalities">Reduced Inequalities</option>
+          <option value="sustainable_cities_and_communities">Sustainable Cities and Communities</option>
+          <option value="responsible_consumption_and_production">Responsible Consumption and Production</option>
+          <option value="climate_action">Climate Action</option>
+          <option value="life_below_water">Life Below Water</option>
+          <option value="life_on_land">Life on Land</option>
+          <option value="peace_justice_and_strong_institutions">Peace, Justice, and Strong Institutions</option>
+          <option value="partnerships_for_the_goals">Partnerships for the Goals</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="node-target">Source Instagram nickname:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="node-target" type="text" placeholder="nickname" required>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Add Node
+        </button>
+      </div>
+    </form>
+
+    <!-- Flashcards Section -->
+    <h2 class="text-2xl font-bold mb-4 text-center">Environmental Tips</h2>
+    <div class="flashcards-container">
+      <!-- Flashcard 1 -->
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <i class="fa fa-tint card-icon"></i>
+            <h3>Save Water and Electricity</h3>
+          </div>
+          <div class="flashcard-back">
+            <p>If we don't waste resources unnecessarily, we'll have much more water and electricity available. Don't waste them!</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flashcard 2 -->
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <i class="fa fa-leaf card-icon"></i>
+            <h3>Protect Plants and Algae</h3>
+          </div>
+          <div class="flashcard-back">
+            <p>They provide us with oxygen. We should be grateful for them. Many medicines are also made from plants.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flashcard 3 -->
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <i class="fa fa-recycle card-icon"></i>
+            <h3>Clean Up After Yourself</h3>
+          </div>
+          <div class="flashcard-back">
+            <p>Don't be indifferent! If you see trash, pick it up. This way we can reduce unsanitary conditions and make the world cleaner!</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flashcard 4 -->
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <i class="fa fa-industry card-icon"></i>
+            <h3>Reduce Factory Construction</h3>
+          </div>
+          <div class="flashcard-back">
+            <p>They produce dust that is harmful to humans and the environment. Try switching to alternative types of factories, such as water or wind-powered ones.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-4">
+    <div class="container mx-auto text-center">
+      <p>Follow us on social media:</p>
+      <div class="flex justify-center mt-2">
+        <a href="https://www.instagram.com/tamyr_project" class="text-white hover:text-gray-400 mx-2"><i class="fa fa-instagram"></i></a>
+        <a href="https://t.me/tamyrproject" class="text-white hover:text-gray-400 mx-2"><i class="fa fa-telegram"></i></a>
+        <a href="https://taplink.cc/tamyrproject" class="text-white hover:text-gray-400 mx-2"><i class="fa fa-link"></i></a>
+      </div>
+      <p class="mt-4">© 2024 Tamyr Project. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- D3.js and Custom Script -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

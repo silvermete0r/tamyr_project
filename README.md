@@ -2,6 +2,8 @@
 
 A social network that connects people who contribute to environmental initiatives in Kazakhstan. Each node in the network represents a user who has completed an ecological action, and edges represent connections between inspirers and those they've inspired.
 
+Developed by [Skillset School Team](https://skillset.edu.kz/)
+
 ## Features
 
 - Interactive graph visualization using D3.js
